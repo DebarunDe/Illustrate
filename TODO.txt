@@ -1,4 +1,6 @@
+[2024-02-17]
+- [-] Get player data from Yahoo
+
 [2024-02-16]
 - [+] Set up changelog: Setup a changelog to show changes the app is going through.
-- [x] Get keys from Yahoo Fantasy API: Set up a connection with the Yahoo API to gain access to the player data that I want. Store the keys in a gitignored file for now.
-- [x] Task 3: Description of task 3
+- [+] Get keys from Yahoo Fantasy API: Set up a connection with the Yahoo API to gain access to the player data that I want. Store the keys in a gitignored file for now.
