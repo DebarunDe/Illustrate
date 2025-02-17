@@ -1,0 +1,7 @@
+# Ignore all files in the keys folder
+keys/*
+
+# Ignore all executables (Unix-like systems)
+*.out
+*.exe
+*.o
