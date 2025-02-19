@@ -24,11 +24,6 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
     return size * nmemb;
 }
 
-template <typename T>
-void printValue(const T& value) {
-    std::cout << "Value: " << value << std::endl;
-}
-
 /**
  * @function parseJsonToMap
  * @brief generates an unordered map of a json response.
@@ -40,7 +35,8 @@ void printValue(const T& value) {
  * @return unordered_map of json response.
  */
 template <typename T>
-auto parseJsonToMap(const T& jsonStr) -> decltype(std::unordered_map<std::string, std::string>()) {
+auto parseJsonToMap(const T& jsonStr) 
+-> decltype(std::unordered_map<std::string, std::string>()) {
     std::unordered_map<std::string, std::string> jsonMap;
     size_t pos = 0;
     while ((pos = jsonStr.find("\"", pos)) != std::string::npos) {
@@ -58,6 +54,28 @@ auto parseJsonToMap(const T& jsonStr) -> decltype(std::unordered_map<std::string
         pos = valueEnd + 1;
     }
     return jsonMap;
+}
+
+/**
+ * @function parseMapToPostString
+ * @brief generates a post string from an unordered map.
+ * 
+ * This function is responsible for parsing an unordered map
+ * to a post string for use in curl requests.
+ * 
+ * @param postFields the post fields to send with the request.
+ * @return std::string the post string.
+ */
+template <typename T>
+auto parseMapToPostString(const T& postFields) 
+-> decltype(std::string()) {
+    std::string postFieldsStr;
+    for (auto& pair : postFields) {
+        postFieldsStr += pair.first + "=" + pair.second + "&";
+    }
+    // remove trailing '&' from postFieldsStr
+    postFieldsStr.pop_back();
+    return postFieldsStr;
 }
 
 /**
@@ -94,14 +112,10 @@ auto call(const F& function, const C& command, const P& postFields)
     CURLcode res;
     std::string readBuffer;
     url += command;
+    url += "?";
 
-    //convert unordered_map to postFields std::string
-    std::string postFieldsStr;
-    for (auto& pair : postFields) {
-        postFieldsStr += pair.first + "=" + pair.second + "&";
-    }
-    // remove trailing '&' from postFieldsStr
-    postFieldsStr.pop_back();
+    // generate postFields string
+    std::string postFieldsStr = parseMapToPostString(postFields);
 
     // perform curl request
     curl = curl_easy_init();
@@ -116,11 +130,15 @@ auto call(const F& function, const C& command, const P& postFields)
         if(res != CURLE_OK) {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         } else {
-            std::cout << "Response: " << readBuffer << std::endl;
+            if (readBuffer.empty()) {
+                std::cerr << "Empty response." << std::endl;
+            }
 
             // Parse the JSON response to unordered_map
             jsonResponse = parseJsonToMap(readBuffer);
         }
+    } else {
+        std::cerr << "Curl failed to initialize." << std::endl;
     }
 
     // Clean up

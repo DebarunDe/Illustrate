@@ -6,12 +6,19 @@
 
 int main()
 {
-    printValue("Hello World");
-    std::cout << AUTH_CODE << std::endl;
-    std::cout << CLIENT_ID << std::endl;
-    std::cout << CLIENT_SECRET << std::endl;
-    std::cout << REDIRECT_URI << std::endl;
-    getAccessToken(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, AUTH_CODE);
-
+    User user;
+    std::cout << "Logging in..." << std::endl;
+    user.login();
+    std::cout << "Logged in." << std::endl;
+    bool running = true;
+    while (running) {
+        std::string command;
+        std::cout << "Enter command: ";
+        std::cin >> command;
+        if (command == "exit") {
+            running = false;
+        } else {
+        }
+    }
     return 0;
 }
